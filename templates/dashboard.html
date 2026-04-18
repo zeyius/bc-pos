@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+
+  <!-- TOP ROW -->
+  <div class="dashboard-top">
+
+    <!-- LEFT: Overview -->
+    <div class="card">
+      <h2>Today's Overview</h2>
+
+      <div class="admin-stats">
+        <div class="stat">
+          <div class="muted">Total Revenue</div>
+          <div class="big">{{ total_today }} DA</div>
+        </div>
+
+        <div class="stat">
+          <div class="muted">Transactions</div>
+          <div class="big">{{ count_today }}</div>
+        </div>
+
+        <div class="stat">
+          <div class="muted">Average Sale</div>
+          <div class="big">
+            {% if count_today > 0 %}
+              {{ (total_today / count_today)|round(2) }} DA
+            {% else %}
+              0 DA
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Small Day Status -->
+    <div class="card day-status-card">
+      {% if is_closed %}
+        <div class="day-status closed">
+          <div>
+            <strong>Closed</strong>
+            <span>{{ closed_time }}</span>
+          </div>
+
+          <a href="/reopen_day" style="text-decoration:none;">
+            <button class="btn btn-primary" type="button">Reopen</button>
+          </a>
+        </div>
+      {% else %}
+        <div class="day-status open">
+          <strong>Open</strong>
+
+          <form method="POST" action="/close_day" style="margin:0;">
+            <button class="btn btn-danger" type="submit">Close</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+  </div> <!-- ✅ end dashboard-top -->
+
+  <!-- LAST SALES -->
+  <div class="card" style="margin-top:16px;">
+    <h2>Last 4 Sales</h2>
+
+    {% if is_closed %}
+      <div class="muted">Day is closed — sales list hidden.</div>
+    {% else %}
+
+      {% if recent_sales|length == 0 %}
+        <div class="muted">No sales yet.</div>
+      {% else %}
+        <div style="display:grid; gap:10px; margin-top:10px;">
+          {% for s in recent_sales %}
+            <a href="/sale/{{ s.id }}" style="text-decoration:none; color:inherit;">
+              <div class="stat" style="cursor:pointer;">
+                <div class="muted">{{ s.time_str }} — Receipt {{ s.receipt_no }}</div>
+                <div class="big">{{ s.total }} DA</div>
+                <div class="muted">{{ s.items_count }} items</div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+
+</div> <!-- ✅ end pos-page -->
+
+{% endblock %}

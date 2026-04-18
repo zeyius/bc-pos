@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 600px;">
+
+    <div class="card">
+
+      <h2>Receipt #{{ receipt.receipt_no }}</h2>
+      <p class="muted">Cashier: {{ receipt.cashier_username }}</p>
+      <p class="muted">Date: {{ receipt.created_at }}</p>
+
+      <hr>
+
+      <table style="width:100%; margin-top:12px;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ item.unit_price }}</td>
+            <td>{{ item.line_total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h3 style="text-align:right;">Total: {{ receipt.total }}</h3>
+
+    </div>
+  </div>
+</div>
+
+
+{% if not receipt.is_void %}
+  <form method="POST" action="/void_receipt/{{ receipt.receipt_no }}">
+    <button class="btn btn-danger">Void Receipt</button>
+  </form>
+{% else %}
+  <h3 style="color:#f87171;">THIS RECEIPT IS VOID</h3>
+{% endif %}
+
+
+
+{% endblock %}

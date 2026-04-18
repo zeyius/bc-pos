@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 820px;">
+
+    <div class="card">
+      <h2>Receipt {{ sale.receipt_no }}</h2>
+      <p class="muted" style="margin-top:-6px;">
+        {{ sale.created_at }}
+      </p>
+
+      <hr>
+
+      {% if items|length == 0 %}
+        <div class="muted">No items found for this sale.</div>
+      {% else %}
+        <div style="display:grid; gap:10px; margin-top:10px;">
+          {% for it in items %}
+            <div class="stat" style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+              <div>
+                <div style="font-weight:750;">{{ it.name }}</div>
+                <div class="muted">{{ it.qty }} × item</div>
+              </div>
+              <div class="big" style="font-size:16px;">{{ it.line_total }} DA</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <hr>
+
+      <div class="line total" style="display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-weight:800;">Total</span>
+        <strong style="font-size:22px;">{{ sale.total }} DA</strong>
+      </div>
+
+      <div class="actions" style="margin-top:14px;">
+        <a href="/">
+          <button class="btn">Back to Dashboard</button>
+        </a>
+        <a href="/new_sale">
+          <button class="btn btn-primary">New Sale</button>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

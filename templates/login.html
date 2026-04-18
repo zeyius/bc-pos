@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 520px;">
+
+    <div class="card">
+      <h2>Login</h2>
+      <p class="muted">Coffee POS access</p>
+
+      <form method="POST" style="margin-top: 14px;">
+        <label>
+          Username
+          <input type="text" name="username" required>
+        </label>
+
+        <label style="margin-top: 10px;">
+          Password
+          <input type="password" name="password" required>
+        </label>
+
+        <div class="actions" style="margin-top: 14px;">
+          <button class="btn btn-primary" type="submit">Sign in</button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

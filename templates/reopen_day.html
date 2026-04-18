@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 520px;">
+
+    <div class="card">
+      <h2>Reopen Day Access</h2>
+      <p class="muted">Enter the special reopen credentials (different from POS login).</p>
+
+      {% if error %}
+        <div class="stat" style="border-color: rgba(251,113,133,0.35); background: rgba(251,113,133,0.10);">
+          <strong style="color:#fda4af;">{{ error }}</strong>
+        </div>
+      {% endif %}
+
+      <form method="POST" style="margin-top: 14px;">
+        <label>
+          Reopen Username
+          <input type="text" name="username" required>
+        </label>
+
+        <label style="margin-top: 10px;">
+          Reopen Password
+          <input type="password" name="password" required>
+        </label>
+
+        <div class="actions" style="margin-top: 14px;">
+          <button class="btn btn-primary" type="submit">Reopen Day</button>
+          <a href="/" style="text-decoration:none;">
+            <button class="btn" type="button">Cancel</button>
+          </a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

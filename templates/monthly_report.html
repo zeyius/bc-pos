@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr;">
+
+    <div class="card">
+      <h2>Monthly Report</h2>
+
+      {% if sales|length == 0 %}
+        <div class="cart-empty">No sales this month.</div>
+      {% else %}
+
+        <div class="report">
+          {% for row in sales %}
+            <div class="sale-card">
+              <div class="sale-head">
+                <strong>{{ row.day }}</strong>
+                <span class="big">{{ row.total }} DA</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+      {% endif %}
+
+      <div class="actions" style="margin-top: 14px;">
+        <a href="/reports">
+          <button class="btn">Back</button>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="actions" style="margin-bottom: 14px;">
+  <a href="/export_monthly_csv?month={{ month }}">
+   <button class="btn btn-primary">Download CSV</button>
+  </a>
+
+</div>
+
+
+{% endblock %}

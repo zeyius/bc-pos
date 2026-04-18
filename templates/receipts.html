@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr;">
+
+    <div class="card">
+      <h2>Receipts</h2>
+      <p class="muted">Latest 2000 receipts</p>
+
+      <table style="width:100%; margin-top:14px;">
+        <thead>
+          <tr>
+            <th>Receipt No</th>
+            <th>Date</th>
+            <th>Cashier</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in receipts %}
+          <tr>
+            <td>{{ r.receipt_no }}</td>
+            <td>{{ r.created_at }}</td>
+            <td>{{ r.cashier_username }}</td>
+            <td>{{ r.total }}</td>
+            <td>
+              {% if r.is_void %}
+                <span style="color:#f87171;">VOID</span>
+              {% else %}
+                OK
+              {% endif %}
+            </td>
+            <td>
+             <a href="/sale/{{ r.id }}">
+              <button class="btn btn-primary">Open</button>
+             </a>
+
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

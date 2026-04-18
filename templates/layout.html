@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coffee POS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+
+
+    {% if session.get("user_id") %}
+        <nav>
+            <a href="/">Dashboard</a> |
+            <a href="/new_sale">New Sale</a> |
+            <a href="/products">Products</a> |
+            <a href="/reports">Reports</a> |
+            <a href="/receipts">Receipts</a> |
+            <a href="/logout">Logout</a>
+        </nav>
+        <hr>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+</body>
+</html>

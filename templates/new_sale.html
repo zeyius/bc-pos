@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid pos-sale-grid">
+
+
+    <!-- LEFT: MENU -->
+    <div class="card">
+      <h2>Menu</h2>
+
+
+      <div class="menu">
+        {% for category, items in products|groupby("category") %}
+
+          <div class="category"
+               onclick="toggleCategory('{{ category|replace(' ', '_')|replace('&','and') }}')">
+            <h4>{{ category }}</h4>
+            <span>{{ items|length }} items</span>
+          </div>
+
+          <div class="category-items" id="cat_{{ category|replace(' ', '_')|replace('&','and') }}">
+            {% for product in items %}
+              <div class="menu-item"
+                   data-name="{{ product.name|lower }}"
+                   onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})">
+
+                <div class="meta">
+                  <div class="name">{{ product.name }}</div>
+                  <div class="price">{{ product.price }} DA</div>
+                </div>
+
+                <button class="add" type="button"
+                        onclick="event.stopPropagation(); addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})">
+                  Add
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RIGHT: CART -->
+    <div class="card">
+      <h2>Current Order</h2>
+
+      <div id="cart-items" class="cart"></div>
+
+      <div class="totals">
+        <div class="line">
+          <span>Subtotal</span>
+          <span><strong id="subtotal">0</strong> DA</span>
+        </div>
+      </div>
+
+      <div class="cashbox">
+        <div class="cash-label">
+          Cash Given
+          <input type="number" id="cash" oninput="calculateChange()">
+        </div>
+
+        <div class="line total">
+          <span>Change</span>
+          <strong id="change">0</strong>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="confirm-sale-btn" class="btn btn-primary" onclick="submitSale()">
+          Confirm Sale
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='pos.js') }}"></script>
+
+{% endblock %}

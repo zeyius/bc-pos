@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Products</h2>
+
+<h3>Add Product</h3>
+<form method="POST" action="/add_product">
+    <input type="text" name="name" placeholder="Product name" required>
+    <input type="number" step="0.01" name="price" placeholder="Price" required>
+    <select name="category" required>
+        <option value="Hot coffee">Hot coffee</option>
+        <option value="Iced coffee">Iced coffee</option>
+        <option value="Non-Coffee">Non-Coffee</option>
+        <option value="Juices & Cocktails">Juices & Cocktails</option>
+        <option value="Milkshakes">Milkshakes</option>
+        <option value="Sweets & Savory">Sweets & Savory</option>
+    </select>
+    <button type="submit">Add</button>
+</form>
+
+<hr>
+
+<h3>Active Products</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <form method="POST" action="/edit_product/{{ product.id }}">
+                <td>
+                    <input type="text" name="name" value="{{ product.name }}" required style="width:160px;">
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="price" value="{{ product.price }}" required style="width:90px;">
+                </td>
+                <td>
+                    <select name="category" required>
+                        <option value="Hot coffee" {% if product.category == "Hot coffee" %}selected{% endif %}>Hot coffee</option>
+                        <option value="Iced coffee" {% if product.category == "Iced coffee" %}selected{% endif %}>Iced coffee</option>
+                        <option value="Non-Coffee" {% if product.category == "Non-Coffee" %}selected{% endif %}>Non-Coffee</option>
+                        <option value="Juices & Cocktails" {% if product.category == "Juices & Cocktails" %}selected{% endif %}>Juices & Cocktails</option>
+                        <option value="Milkshakes" {% if product.category == "Milkshakes" %}selected{% endif %}>Milkshakes</option>
+                        <option value="Sweets & Savory" {% if product.category == "Sweets & Savory" %}selected{% endif %}>Sweets & Savory</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+
+            <form method="POST" action="/delete_product/{{ product.id }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+                </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

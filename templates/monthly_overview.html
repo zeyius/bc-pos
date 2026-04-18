@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 820px;">
+
+    <div class="card">
+      <h2>Monthly Overview</h2>
+      <p class="muted">Click a month to view days inside it.</p>
+
+      {% if months|length == 0 %}
+        <div class="muted">No sales yet.</div>
+      {% else %}
+        <div style="display:grid; gap:10px; margin-top:12px;">
+          {% for m in months %}
+            <a href="/monthly_report?month={{ m.month_key }}" style="text-decoration:none; color:inherit;">
+              <div class="stat" style="display:flex; justify-content:space-between; align-items:baseline; cursor:pointer;">
+                <strong>{{ m.month_label }}</strong>
+                <span class="big">{{ m.total }} DA</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="actions" style="margin-top:14px;">
+        <a href="/reports"><button class="btn">Back</button></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
