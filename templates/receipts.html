@@ -16,7 +16,6 @@
             <th>Date</th>
             <th>Cashier</th>
             <th>Total</th>
-            <th>Status</th>
             <th>View</th>
           </tr>
         </thead>
@@ -27,13 +26,6 @@
             <td>{{ r.created_at }}</td>
             <td>{{ r.cashier_username }}</td>
             <td>{{ r.total }}</td>
-            <td>
-              {% if r.is_void %}
-                <span style="color:#f87171;">VOID</span>
-              {% else %}
-                OK
-              {% endif %}
-            </td>
             <td>
              <a href="/sale/{{ r.id }}">
               <button class="btn btn-primary">Open</button>

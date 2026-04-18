@@ -14,9 +14,11 @@
           <button class="btn btn-primary">Daily Report</button>
         </a>
 
+          {% if role != "staff" %}
           <a href="/monthly_overview">
            <button class="btn">Monthly Report</button>
           </a>
+          {% endif %}
 
       </div>
     </div>

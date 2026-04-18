@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="pos-page">
+  <div class="grid" style="grid-template-columns: 1fr; max-width: 860px;">
+
+    <div class="card">
+      <h2>💸 Spent Today</h2>
+      <p class="muted">Track what you spent during your shift.</p>
+
+      <!-- Add form -->
+      <form method="POST" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:flex-end;">
+        <div>
+          <div class="muted" style="font-size:12px; margin-bottom:4px;">Name</div>
+          <input type="text" name="name" placeholder="e.g. Milk" required
+                 style="padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.12);
+                        background:rgba(0,0,0,0.22); color:var(--text); width:180px;">
+        </div>
+        <div>
+          <div class="muted" style="font-size:12px; margin-bottom:4px;">Price (DA)</div>
+          <input type="number" step="0.01" name="price" placeholder="0" required
+                 style="padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.12);
+                        background:rgba(0,0,0,0.22); color:var(--text); width:120px;">
+        </div>
+        <div>
+          <div class="muted" style="font-size:12px; margin-bottom:4px;">Note</div>
+          <input type="text" name="note" placeholder="Optional"
+                 style="padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.12);
+                        background:rgba(0,0,0,0.22); color:var(--text); width:200px;">
+        </div>
+        <button class="btn btn-primary" type="submit">Add</button>
+      </form>
+
+      <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.08);">
+
+      <!-- Table -->
+      {% if rows|length == 0 %}
+        <div class="muted">No spendings recorded yet.</div>
+      {% else %}
+        <table style="width:100%; margin-top:10px;">
+          <thead>
+            <tr>
+              {% if role == "admin" %}<th>Cashier</th>{% endif %}
+              <th>Name</th>
+              <th>Price</th>
+              <th>Note</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              {% if role == "admin" %}<td>{{ r.username }}</td>{% endif %}
+              <td>{{ r.name }}</td>
+              <td>{{ r.price }} DA</td>
+              <td>{{ r.note or '—' }}</td>
+              <td>{{ r.created_at[:16] }}</td>
+              <td>
+                <form method="POST" action="/delete_spending/{{ r.id }}">
+                  <button class="btn btn-danger" type="submit"
+                          style="padding:4px 10px; font-size:12px;">✕</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      <div class="actions" style="margin-top:16px;">
+        <a href="/"><button class="btn">Back to Dashboard</button></a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

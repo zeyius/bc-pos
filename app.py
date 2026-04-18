@@ -97,6 +97,8 @@ def dashboard():
     if is_closed or not current_day_id:
         total_today = 0
         count_today = 0
+        my_total = 0
+        my_count = 0
         recent_sales = []
     else:
         sales_today = conn.execute("""
@@ -108,6 +110,17 @@ def dashboard():
 
         total_today = sum(s["total"] for s in sales_today)
         count_today = len(sales_today)
+
+        my_sales = conn.execute("""
+            SELECT total
+            FROM sales
+            WHERE business_day_id = ?
+              AND is_void = 0
+              AND user_id = ?
+        """, (current_day_id, session.get("user_id"))).fetchall()
+
+        my_total = sum(s["total"] for s in my_sales)
+        my_count = len(my_sales)
 
         recent_sales = conn.execute("""
             SELECT
@@ -132,9 +145,12 @@ def dashboard():
         "dashboard.html",
         total_today=total_today,
         count_today=count_today,
+        my_total=my_total,
+        my_count=my_count,
         recent_sales=recent_sales,
         is_closed=is_closed,
-        closed_time=closed_time
+        closed_time=closed_time,
+        username=session.get("username")
     )
 
 
@@ -178,6 +194,7 @@ def login():
         if user and verify_password(user["hash"], password):
             session["user_id"] = user["id"]
             session["role"] = user["role"]
+            session["username"] = user["username"]
             return redirect("/")
         return "Invalid credentials"
 
@@ -324,9 +341,10 @@ def void_receipt(receipt_no):
 def receipts_list():
     conn = get_db()
     rows = conn.execute("""
-        SELECT id, receipt_no, created_at, total, is_void
-        FROM sales
-        ORDER BY datetime(created_at) DESC
+        SELECT s.id, s.receipt_no, s.created_at, s.total, s.is_void, u.username AS cashier_username
+        FROM sales s
+        LEFT JOIN users u ON u.id = s.user_id
+        ORDER BY datetime(s.created_at) DESC
         LIMIT 200
     """).fetchall()
     conn.close()
@@ -424,7 +442,7 @@ def view_receipt(receipt_no):
 @app.route("/reports")
 @login_required
 def reports():
-    return render_template("reports.html")
+    return render_template("reports.html", role=session.get("role"))
 
 
 @app.route("/daily_report")
@@ -485,6 +503,8 @@ def daily_report():
 @app.route("/monthly_overview")
 @login_required
 def monthly_overview():
+    if session.get("role") == "staff":
+        return redirect("/reports")
     conn = get_db()
 
     months = conn.execute("""
@@ -505,6 +525,8 @@ def monthly_overview():
 @app.route("/monthly_report")
 @login_required
 def monthly_report():
+    if session.get("role") == "staff":
+        return redirect("/reports")
     month = request.args.get("month") or datetime.now().strftime("%Y-%m")
 
     conn = get_db()
@@ -647,6 +669,8 @@ def delete_product(product_id):
 @app.route("/export_monthly_csv")
 @login_required
 def export_monthly_csv():
+    if session.get("role") == "staff":
+        return redirect("/reports")
     month = request.args.get("month") or datetime.now().strftime("%Y-%m")
 
     conn = get_db()
@@ -686,5 +710,63 @@ def export_monthly_csv():
     )
 
 
+@app.route("/spendings", methods=["GET", "POST"])
+@login_required
+def spendings():
+    conn = get_db()
+    user_id = session.get("user_id")
+    role = session.get("role")
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        price = request.form.get("price")
+        note = request.form.get("note", "").strip()
+
+        if name and price:
+            conn.execute("""
+                INSERT INTO spendings (user_id, name, price, note, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            """, (user_id, name, float(price), note, datetime.now().isoformat()))
+            conn.commit()
+
+        conn.close()
+        return redirect("/spendings")
+
+    if role == "admin":
+        rows = conn.execute("""
+            SELECT sp.*, u.username
+            FROM spendings sp
+            JOIN users u ON u.id = sp.user_id
+            ORDER BY datetime(sp.created_at) DESC
+        """).fetchall()
+    else:
+        rows = conn.execute("""
+            SELECT sp.*, u.username
+            FROM spendings sp
+            JOIN users u ON u.id = sp.user_id
+            WHERE sp.user_id = ?
+            ORDER BY datetime(sp.created_at) DESC
+        """, (user_id,)).fetchall()
+
+    conn.close()
+    return render_template("spendings.html", rows=rows, role=role)
+
+
+@app.route("/delete_spending/<int:spending_id>", methods=["POST"])
+@login_required
+def delete_spending(spending_id):
+    conn = get_db()
+    # only allow deleting your own, unless admin
+    if session.get("role") == "admin":
+        conn.execute("DELETE FROM spendings WHERE id = ?", (spending_id,))
+    else:
+        conn.execute("DELETE FROM spendings WHERE id = ? AND user_id = ?",
+                     (spending_id, session.get("user_id")))
+    conn.commit()
+    conn.close()
+    return redirect("/spendings")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+    
