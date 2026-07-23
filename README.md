@@ -1,7 +1,3 @@
-☕ Coffee POS System
-
-Video demo : https://www.youtube.com/watch?v=hL64ApIprbo
-
 Description :
 
 A modern web-based Point of Sale (POS) system built with Flask, SQLite, and a responsive UI.
